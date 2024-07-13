@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using DesafioAVMB.Infrastructure.Persistence;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DesafioAVMB.Infrastructure;
@@ -19,6 +22,10 @@ public static class ServiceCollectionExtensions
         {
             throw new Exception("Connection string is missing.");
         }
+
+        services.AddDbContext<ApplicationDbContext>(
+            options => options.UseInMemoryDatabase(connectionString)
+        );
 
         return services;
     }

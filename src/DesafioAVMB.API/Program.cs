@@ -20,7 +20,11 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.DisplayRequestDuration();
+    });
+
     app.UseHttpsRedirection();
     app.UseExceptionHandler();
 

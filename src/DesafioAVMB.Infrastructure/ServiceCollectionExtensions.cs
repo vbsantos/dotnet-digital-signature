@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
         }
 
         services.AddDbContext<ApplicationDbContext>(
-            options => options.UseInMemoryDatabase(connectionString)
+            options => options.UseSqlServer(connectionString)
         );
 
         return services;

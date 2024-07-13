@@ -1,9 +1,9 @@
-using System.Security.Claims;
-
+using DesafioAVMB.API.Endpoints;
 using DesafioAVMB.Application;
 using DesafioAVMB.Infrastructure;
+using DesafioAVMB.Infrastructure.Persistence;
 
-using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,6 +53,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 {
+    // Apply migrations
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        dbContext.Database.Migrate();
+    }
+
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
@@ -63,17 +70,10 @@ var app = builder.Build();
     app.UseExceptionHandler();
     app.UseAuthorization();
 
-    var apiEndpoints = app.MapGroup("api")
-        .WithOpenApi();
-
-    apiEndpoints.MapGroup("account")
-        .MapIdentityApi<IdentityUser>()
-        .WithSummary("Microsoft Identity Endpoint")
-        .WithTags("Account");
-
-    apiEndpoints.MapGet("/user-name", (ClaimsPrincipal user) => $"Desafio AVMB: {user.Identity!.Name}.")
-        .RequireAuthorization()
-        .WithTags("Other");
+    // Endpoints
+    var apiEndpoints = app.MapGroup("api").WithOpenApi();
+    apiEndpoints.AddAuthEndpoints();
+    apiEndpoints.AddDigitalSignatureEndpoints();
 
     app.Run();
 }

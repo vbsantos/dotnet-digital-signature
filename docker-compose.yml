@@ -1,0 +1,25 @@
+services:
+  api:
+    image: desafio-avmb-api
+    build:
+      context: .
+      dockerfile: src/DesafioAVMB.API/Dockerfile
+    ports:
+      - "5126:5126"
+    environment:
+      - ConnectionStrings__Default=Server=db; Database=DesafioAVMB; User Id=sa; Password=${DB_PASSWORD}; Encrypt=false; TrustServerCertificate=false;
+    depends_on:
+      - db
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: ${DB_PASSWORD}
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+volumes:
+  mssql_data:

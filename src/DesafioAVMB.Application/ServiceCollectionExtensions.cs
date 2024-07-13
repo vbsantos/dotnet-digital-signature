@@ -1,2 +1,11 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace DesafioAVMB.Application;
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddApplication(this IServiceCollection services)
+    {
+        return services;
+    }
+}

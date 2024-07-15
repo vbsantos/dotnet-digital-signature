@@ -13,4 +13,5 @@ public interface IAstenAssinaturaWebService
     public Task<ApiResponse<DownloadEnvelopeOutputDto>> DownloadEnvelope(ApiRequest<DownloadEnvelopeInputDto> requestBody);
     public Task<ApiResponse<IEnumerable<GetRepositoriosDoUsuarioOutputDto>>> GetRepositoriosDoUsuario(ApiRequest<GetRepositoriosDoUsuarioInputDto> requestBody);
     public Task<ApiResponse<GetDadosEnvelopeOutputDto>> GetDadosEnvelope(ApiRequest<GetDadosEnvelopeInputDto> requestBody);
+    public Task<ApiResponse<IEnumerable<GetEnvelopesOutputDto>>> GetEnvelopesByRepositorioOuPasta(ApiRequest<GetEnvelopesInputDto> requestBody);
 }

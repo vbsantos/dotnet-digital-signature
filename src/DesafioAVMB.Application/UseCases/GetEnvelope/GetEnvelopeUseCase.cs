@@ -1,3 +1,4 @@
+using DesafioAVMB.Application.Common;
 using DesafioAVMB.Application.Interfaces.Repositories;
 using DesafioAVMB.Application.WebService;
 using DesafioAVMB.Application.WebService.Dtos;
@@ -56,13 +57,13 @@ public class GetEnvelopeUseCase : IGetEnvelopeUseCase
 
             var response = new GetEnvelopeUseCaseOutputDto
             {
+                Id = envelope.Id,
                 Description = apiReponse.Response.Descricao,
                 PageCount = apiReponse.Response.NumeroPaginas,
                 Status = (EEnvelopeStatus)apiReponse.Response.Status,
-                StatusDescription = ParseStatus((EEnvelopeStatus)apiReponse.Response.Status),
+                StatusDescription = ParseEnvelopeStatus.Parse((EEnvelopeStatus)apiReponse.Response.Status),
                 CreatedAt = apiReponse.Response.DataHoraCriacao,
                 UpdatedAt = apiReponse.Response.DataHoraAlteracao,
-                ConcludedAt = apiReponse.Response.DataHoraCriacao,
             };
 
             return response;
@@ -71,19 +72,5 @@ public class GetEnvelopeUseCase : IGetEnvelopeUseCase
         {
             return Error.Failure(ex.Message);
         }
-    }
-
-    private static string ParseStatus(EEnvelopeStatus status)
-    {
-        return status switch
-        {
-            EEnvelopeStatus.EmConstrucao => "Em construção",
-            EEnvelopeStatus.AguardandoAssinaturas => "Aguardando Assinaturas",
-            EEnvelopeStatus.Concluido => "Concluído",
-            EEnvelopeStatus.Arquivado => "Arquivado",
-            EEnvelopeStatus.Cancelado => "Cancelado",
-            EEnvelopeStatus.Expirado => "Expirado",
-            _ => "Desconhecido",
-        };
     }
 }

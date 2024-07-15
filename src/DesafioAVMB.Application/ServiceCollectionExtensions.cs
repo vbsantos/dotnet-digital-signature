@@ -2,6 +2,7 @@
 using DesafioAVMB.Application.UseCases.CreateRepository;
 using DesafioAVMB.Application.UseCases.CreateSignatory;
 using DesafioAVMB.Application.UseCases.GetEnvelope;
+using DesafioAVMB.Application.UseCases.GetEnvelopesByRepositorio;
 using DesafioAVMB.Application.UseCases.GetFile;
 using DesafioAVMB.Application.UseCases.GetRepositories;
 using DesafioAVMB.Application.UseCases.SendEnvelope;
@@ -22,6 +23,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGetFileUseCase, GetFileUseCase>();
         services.AddScoped<IGetEnvelopeUseCase, GetEnvelopeUseCase>();
         services.AddScoped<IGetRepositoriesUseCase, GetRepositoriesUseCase>();
+        services.AddScoped<IGetEnvelopesByRepositorioUseCase, GetEnvelopesByRepositorioUseCase>();
 
         return services;
     }

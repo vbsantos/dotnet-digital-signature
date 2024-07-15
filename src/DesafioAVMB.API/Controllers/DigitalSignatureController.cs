@@ -2,6 +2,7 @@ using DesafioAVMB.Application.UseCases.CreateEnvelope;
 using DesafioAVMB.Application.UseCases.CreateRepository;
 using DesafioAVMB.Application.UseCases.CreateSignatory;
 using DesafioAVMB.Application.UseCases.GetEnvelope;
+using DesafioAVMB.Application.UseCases.GetEnvelopesByRepositorio;
 using DesafioAVMB.Application.UseCases.GetFile;
 using DesafioAVMB.Application.UseCases.GetRepositories;
 using DesafioAVMB.Application.UseCases.SendEnvelope;
@@ -24,6 +25,7 @@ public class DigitalSignatureController : ControllerBase
     private readonly IGetFileUseCase _getFileUseCase;
     private readonly IGetRepositoriesUseCase _getRepositoriesUseCase;
     private readonly IGetEnvelopeUseCase _getEnvelopeUseCase;
+    private readonly IGetEnvelopesByRepositorioUseCase _getEnvelopesByRepositorioUseCase;
 
     public DigitalSignatureController(
         ICreateRepositoryUseCase createRepositoryUseCase,
@@ -32,7 +34,8 @@ public class DigitalSignatureController : ControllerBase
         ISendEnvelopeUseCase sendEnvelopeUseCase,
         IGetFileUseCase getFileUseCase,
         IGetRepositoriesUseCase getRepositoriesUseCase,
-        IGetEnvelopeUseCase getEnvelopeUseCase
+        IGetEnvelopeUseCase getEnvelopeUseCase,
+        IGetEnvelopesByRepositorioUseCase getEnvelopesByRepositorioUseCase
     )
     {
         _createRepositoryUseCase = createRepositoryUseCase;
@@ -42,6 +45,7 @@ public class DigitalSignatureController : ControllerBase
         _getFileUseCase = getFileUseCase;
         _getRepositoriesUseCase = getRepositoriesUseCase;
         _getEnvelopeUseCase = getEnvelopeUseCase;
+        _getEnvelopesByRepositorioUseCase = getEnvelopesByRepositorioUseCase;
     }
 
     /// <summary>
@@ -170,6 +174,22 @@ public class DigitalSignatureController : ControllerBase
         var ownerId = User.GetId();
 
         var response = await _getEnvelopeUseCase.Execute(ownerId, repositoryId, envelopeId);
+        if (response.IsError)
+        {
+            return BadRequest(response.ErrorsOrEmptyList);
+        }
+
+        return Ok(response.Value);
+    }
+
+    [HttpGet("repository/{repositoryId}/envelope")]
+    public async Task<IActionResult> GetEnvelope(
+        [FromRoute] Guid repositoryId
+    )
+    {
+        var ownerId = User.GetId();
+
+        var response = await _getEnvelopesByRepositorioUseCase.Execute(ownerId, repositoryId);
         if (response.IsError)
         {
             return BadRequest(response.ErrorsOrEmptyList);

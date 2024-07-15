@@ -146,4 +146,18 @@ public class AstenAssinaturaWebService : IAstenAssinaturaWebService
 
         return apiResponse;
     }
+
+    public async Task<ApiResponse<IEnumerable<GetEnvelopesOutputDto>>> GetEnvelopesByRepositorioOuPasta(ApiRequest<GetEnvelopesInputDto> requestBody)
+    {
+        var httpResponse = await _httpClient.PostAsJsonAsync($"{_configuration["DigitalSignatureProvider:BaseUrlApi"]}/getEnvelopesByRepositorioOuPasta", requestBody);
+        httpResponse.EnsureSuccessStatusCode();
+
+        var apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<GetEnvelopesOutputDto>>>();
+        if (httpResponse is null || apiResponse is null)
+        {
+            throw new HttpRequestException("No response from API.");
+        }
+
+        return apiResponse;
+    }
 }

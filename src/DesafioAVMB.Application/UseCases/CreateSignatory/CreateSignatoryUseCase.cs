@@ -45,6 +45,12 @@ public class CreateSignatoryUseCase : ICreateSignatoryUseCase
                 return Error.Unauthorized("You are not authorized to add signatories to this envelope");
             }
 
+            var alreadyAddedSignatory = envelope.Signatories.Where(x => x.Email == input.Email).FirstOrDefault();
+            if (alreadyAddedSignatory is not null)
+            {
+                return Error.Conflict("Signatory already added");
+            }
+
             // Increment the number of signatories to keep track of the order
             envelope.SignatoryCount += 1;
 
@@ -63,8 +69,8 @@ public class CreateSignatoryUseCase : ICreateSignatoryUseCase
                         Ordem = envelope.SignatoryCount,
                         ConfigAssinatura = new InserirSignatarioInputDtoConfigAssinatura
                         {
-                            EmailSignatario = "vbsanttos@gmail.com",
-                            NomeSignatario = "Vinícius Bohrer dos Santos",
+                            EmailSignatario = input.Email,
+                            NomeSignatario = input.Name,
                             TipoAssinatura = 1,
                             PermitirDelegar = "N",
                             ApenasCelular = "N",
@@ -77,11 +83,11 @@ public class CreateSignatoryUseCase : ICreateSignatoryUseCase
                             AnalisarFaceImagem = "N",
                             PercentualPrecisaoFace = 0,
                         }
-                    },
+                    }
                 }
             };
-            var apiResponse = await _astenAssinaturaWebService.InserirSignatarioEnvelope(inserirSignatarioInput);
 
+            var apiResponse = await _astenAssinaturaWebService.InserirSignatarioEnvelope(inserirSignatarioInput);
             var entity = new Signatory
             {
                 Id = Guid.NewGuid(),
@@ -93,7 +99,6 @@ public class CreateSignatoryUseCase : ICreateSignatoryUseCase
             };
 
             await _signatoryRepository.AddAsync(entity);
-
             await _signatoryRepository.SaveChangesAsync();
 
             var response = new CreateSignatoryOutputDto
@@ -101,7 +106,6 @@ public class CreateSignatoryUseCase : ICreateSignatoryUseCase
                 Message = apiResponse.Response.Mensagem,
                 SignatoryId = entity.Id
             };
-
             return response;
         }
         catch (Exception ex)
@@ -109,10 +113,4 @@ public class CreateSignatoryUseCase : ICreateSignatoryUseCase
             return Error.Failure(ex.Message);
         }
     }
-}
-
-public class CreateSignatoryOutputDto
-{
-    public required string Message { get; set; }
-    public required Guid SignatoryId { get; set; }
 }

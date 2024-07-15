@@ -6,13 +6,13 @@ Este projeto é uma aplicação que integra com a plataforma Asten Assinatura, u
 
 ## Funcionalidades
 
-- [ ] Criação de envelopes
-- [ ] Configuração de signatários em envelopes
-- [ ] Encaminhamento do envelope para assinatura
-- [ ] Consulta do status de um envelope
-- [ ] Salvar em banco os dados do envelope e realizar o download do mesmo quando estiver com status concluído
-- [ ] Disponibilização dos serviços em API Swagger
-- [ ] Consumo via frontend
+- Criação de envelopes
+- Configuração de signatários em envelopes
+- Encaminhamento do envelope para assinatura
+- Consulta do status de um envelope
+- Salvar em banco os dados do envelope e realizar o download do mesmo quando estiver com status concluído
+- Disponibilização dos serviços em API Swagger
+- Consumo via frontend
 
 ## Tecnologias Utilizadas
 

@@ -1,9 +1,10 @@
 ﻿using DesafioAVMB.Application.UseCases.CreateEnvelope;
 using DesafioAVMB.Application.UseCases.CreateRepository;
 using DesafioAVMB.Application.UseCases.CreateSignatory;
+using DesafioAVMB.Application.UseCases.GetEnvelope;
 using DesafioAVMB.Application.UseCases.GetFile;
+using DesafioAVMB.Application.UseCases.GetRepositories;
 using DesafioAVMB.Application.UseCases.SendEnvelope;
-using DesafioAVMB.Application.WebService;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +20,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISendEnvelopeUseCase, SendEnvelopeUseCase>();
 
         services.AddScoped<IGetFileUseCase, GetFileUseCase>();
+        services.AddScoped<IGetEnvelopeUseCase, GetEnvelopeUseCase>();
+        services.AddScoped<IGetRepositoriesUseCase, GetRepositoriesUseCase>();
 
         return services;
     }

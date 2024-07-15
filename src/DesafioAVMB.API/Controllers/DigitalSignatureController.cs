@@ -1,7 +1,9 @@
 using DesafioAVMB.Application.UseCases.CreateEnvelope;
 using DesafioAVMB.Application.UseCases.CreateRepository;
 using DesafioAVMB.Application.UseCases.CreateSignatory;
+using DesafioAVMB.Application.UseCases.GetEnvelope;
 using DesafioAVMB.Application.UseCases.GetFile;
+using DesafioAVMB.Application.UseCases.GetRepositories;
 using DesafioAVMB.Application.UseCases.SendEnvelope;
 using DesafioAVMB.Infrastructure.Extensions;
 
@@ -20,13 +22,17 @@ public class DigitalSignatureController : ControllerBase
     private readonly ICreateSignatoryUseCase _createSignatoryUseCase;
     private readonly ISendEnvelopeUseCase _sendEnvelopeUseCase;
     private readonly IGetFileUseCase _getFileUseCase;
+    private readonly IGetRepositoriesUseCase _getRepositoriesUseCase;
+    private readonly IGetEnvelopeUseCase _getEnvelopeUseCase;
 
     public DigitalSignatureController(
         ICreateRepositoryUseCase createRepositoryUseCase,
         ICreateEnvelopeUseCase createEnvelopeUseCase,
         ICreateSignatoryUseCase createSignatoryUseCase,
         ISendEnvelopeUseCase sendEnvelopeUseCase,
-        IGetFileUseCase getFileUseCase
+        IGetFileUseCase getFileUseCase,
+        IGetRepositoriesUseCase getRepositoriesUseCase,
+        IGetEnvelopeUseCase getEnvelopeUseCase
     )
     {
         _createRepositoryUseCase = createRepositoryUseCase;
@@ -34,6 +40,8 @@ public class DigitalSignatureController : ControllerBase
         _createSignatoryUseCase = createSignatoryUseCase;
         _sendEnvelopeUseCase = sendEnvelopeUseCase;
         _getFileUseCase = getFileUseCase;
+        _getRepositoriesUseCase = getRepositoriesUseCase;
+        _getEnvelopeUseCase = getEnvelopeUseCase;
     }
 
     /// <summary>
@@ -87,7 +95,7 @@ public class DigitalSignatureController : ControllerBase
     /// <param name="envelopeId"></param>
     /// <param name="input"></param>
     /// <returns></returns>
-    [HttpPost("{repositoryId}/envelope/{envelopeId}/signatory")]
+    [HttpPost("repository/{repositoryId}/envelope/{envelopeId}/signatory")]
     public async Task<IActionResult> AddEnvelopeSignatory(
         [FromRoute] Guid repositoryId,
         [FromRoute] Guid envelopeId,
@@ -105,7 +113,7 @@ public class DigitalSignatureController : ControllerBase
         return Ok(response.Value);
     }
 
-    [HttpPost("{repositoryId}/envelope/{envelopeId}/send")]
+    [HttpPost("repository/{repositoryId}/envelope/{envelopeId}/send")]
     public async Task<IActionResult> SendEnvelope(
         [FromRoute] Guid repositoryId,
         [FromRoute] Guid envelopeId
@@ -122,7 +130,7 @@ public class DigitalSignatureController : ControllerBase
         return Ok(response.Value);
     }
 
-    [HttpGet("{repositoryId}/envelope/{envelopeId}/file")]
+    [HttpGet("repository/{repositoryId}/envelope/{envelopeId}/file")]
     public async Task<IActionResult> GetFile(
         [FromRoute] Guid repositoryId,
         [FromRoute] Guid envelopeId
@@ -139,33 +147,34 @@ public class DigitalSignatureController : ControllerBase
         return Ok(response.Value);
     }
 
-    [HttpGet("repository/{repositoryId}")]
-    public IActionResult GetRepository(
-        [FromRoute] Guid repositoryId
-    )
+    [HttpGet("repository")]
+    public async Task<IActionResult> GetRepositories()
     {
-        // TODO
-        return Ok("Repository details.");
+        var ownerId = User.GetId();
+
+        var response = await _getRepositoriesUseCase.Execute(ownerId);
+        if (response.IsError)
+        {
+            return BadRequest(response.ErrorsOrEmptyList);
+        }
+
+        return Ok(response.Value);
     }
 
-    [HttpGet("envelope/{envelopeId}")]
-    public IActionResult GetEnvelope(
+    [HttpGet("repository/{repositoryId}/envelope/{envelopeId}")]
+    public async Task<IActionResult> GetEnvelope(
         [FromRoute] Guid repositoryId,
         [FromRoute] Guid envelopeId
     )
     {
-        // TODO
-        return Ok("Envelope details.");
-    }
+        var ownerId = User.GetId();
 
-    [HttpGet("{repositoryId}/envelope/{envelopeId}/signatory/{signatoryId}")]
-    public IActionResult GetSignatory(
-        [FromRoute] Guid repositoryId,
-        [FromRoute] Guid envelopeId,
-        [FromRoute] Guid signatoryId
-    )
-    {
-        // TODO
-        return Ok("Envelope Signatory details.");
+        var response = await _getEnvelopeUseCase.Execute(ownerId, repositoryId, envelopeId);
+        if (response.IsError)
+        {
+            return BadRequest(response.ErrorsOrEmptyList);
+        }
+
+        return Ok(response.Value);
     }
 }

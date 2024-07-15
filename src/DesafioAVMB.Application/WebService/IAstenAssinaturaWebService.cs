@@ -11,4 +11,6 @@ public interface IAstenAssinaturaWebService
     public Task<ApiResponse<InserirSignatarioOutputDto>> InserirSignatarioEnvelope(ApiRequest<InserirSignatarioInputDto> requestBody);
     public Task<ApiResponse<EncaminharEnvelopeOutputDto>> EncaminharEnvelopeParaAssinaturas(ApiRequest<EncaminharEnvelopeInputDto> requestBody);
     public Task<ApiResponse<DownloadEnvelopeOutputDto>> DownloadEnvelope(ApiRequest<DownloadEnvelopeInputDto> requestBody);
+    public Task<ApiResponse<IEnumerable<GetRepositoriosDoUsuarioOutputDto>>> GetRepositoriosDoUsuario(ApiRequest<GetRepositoriosDoUsuarioInputDto> requestBody);
+    public Task<ApiResponse<GetDadosEnvelopeOutputDto>> GetDadosEnvelope(ApiRequest<GetDadosEnvelopeInputDto> requestBody);
 }

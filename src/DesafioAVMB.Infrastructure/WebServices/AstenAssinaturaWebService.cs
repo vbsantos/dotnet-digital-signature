@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 using DesafioAVMB.Application.WebService;
@@ -112,6 +111,34 @@ public class AstenAssinaturaWebService : IAstenAssinaturaWebService
         httpResponse.EnsureSuccessStatusCode();
 
         var apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<DownloadEnvelopeOutputDto>>();
+        if (httpResponse is null || apiResponse is null)
+        {
+            throw new HttpRequestException("No response from API.");
+        }
+
+        return apiResponse;
+    }
+
+    public async Task<ApiResponse<IEnumerable<GetRepositoriosDoUsuarioOutputDto>>> GetRepositoriosDoUsuario(ApiRequest<GetRepositoriosDoUsuarioInputDto> requestBody)
+    {
+        var httpResponse = await _httpClient.PostAsJsonAsync($"{_configuration["DigitalSignatureProvider:BaseUrlApi"]}/getRepositoriosDoUsuario", requestBody);
+        httpResponse.EnsureSuccessStatusCode();
+
+        var apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<GetRepositoriosDoUsuarioOutputDto>>>();
+        if (httpResponse is null || apiResponse is null)
+        {
+            throw new HttpRequestException("No response from API.");
+        }
+
+        return apiResponse;
+    }
+
+    public async Task<ApiResponse<GetDadosEnvelopeOutputDto>> GetDadosEnvelope(ApiRequest<GetDadosEnvelopeInputDto> requestBody)
+    {
+        var httpResponse = await _httpClient.PostAsJsonAsync($"{_configuration["DigitalSignatureProvider:BaseUrlApi"]}/getDadosEnvelope", requestBody);
+        httpResponse.EnsureSuccessStatusCode();
+
+        var apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<GetDadosEnvelopeOutputDto>>();
         if (httpResponse is null || apiResponse is null)
         {
             throw new HttpRequestException("No response from API.");

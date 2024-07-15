@@ -1,8 +1,8 @@
-using DesafioAVMB.API.Endpoints;
 using DesafioAVMB.Application;
 using DesafioAVMB.Infrastructure;
 using DesafioAVMB.Infrastructure.Persistence;
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -13,7 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
         .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
         .AddEnvironmentVariables();
 
-    builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(c =>
     {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "Desafio AVMB", Version = "v1" });
@@ -44,7 +43,12 @@ var builder = WebApplication.CreateBuilder(args);
             }
         });
     });
-    builder.Services.AddProblemDetails();
+
+    builder.Services
+        .AddEndpointsApiExplorer()
+        .AddProblemDetails()
+        .AddHttpClient()
+        .AddControllers();
 
     builder.Services
         .AddApplication()
@@ -70,10 +74,15 @@ var app = builder.Build();
     app.UseExceptionHandler();
     app.UseAuthorization();
 
-    // Endpoints
-    var apiEndpoints = app.MapGroup("api").WithOpenApi();
-    apiEndpoints.AddAuthEndpoints();
-    apiEndpoints.AddDigitalSignatureEndpoints();
+    // Identity Endpoints
+    app.MapGroup("api/account")
+        .WithOpenApi()
+        .WithDescription("Only the basic endpoints (/login, /register) work for now.")
+        .MapIdentityApi<IdentityUser>()
+        .WithSummary("Microsoft Identity Endpoint")
+        .WithTags("Account");
+
+    app.MapControllers();
 
     app.Run();
 }

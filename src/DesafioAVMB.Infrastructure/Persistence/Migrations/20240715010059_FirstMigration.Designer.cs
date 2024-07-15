@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DesafioAVMB.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240713171542_AddBaseEntitiesAndAuth")]
-    partial class AddBaseEntitiesAndAuth
+    [Migration("20240715010059_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,14 +46,9 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("SignatoryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EnvelopeId");
-
-                    b.HasIndex("SignatoryId");
 
                     b.ToTable("Documents");
                 });
@@ -65,11 +60,13 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("RepositoryId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Sent")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -91,6 +88,12 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<long>("OwnerProviderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProviderId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.ToTable("Repositories");
@@ -106,6 +109,9 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("EnvelopeId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -114,6 +120,8 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EnvelopeId");
 
                     b.ToTable("Signatories");
                 });
@@ -324,10 +332,6 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DesafioAVMB.Domain.Entities.Signatory", null)
-                        .WithMany("Documents")
-                        .HasForeignKey("SignatoryId");
-
                     b.Navigation("Envelope");
                 });
 
@@ -340,6 +344,17 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Repository");
+                });
+
+            modelBuilder.Entity("DesafioAVMB.Domain.Entities.Signatory", b =>
+                {
+                    b.HasOne("DesafioAVMB.Domain.Entities.Envelope", "Envelope")
+                        .WithMany("Signatories")
+                        .HasForeignKey("EnvelopeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Envelope");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -396,16 +411,13 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("DesafioAVMB.Domain.Entities.Envelope", b =>
                 {
                     b.Navigation("Documents");
+
+                    b.Navigation("Signatories");
                 });
 
             modelBuilder.Entity("DesafioAVMB.Domain.Entities.Repository", b =>
                 {
                     b.Navigation("Envelopes");
-                });
-
-            modelBuilder.Entity("DesafioAVMB.Domain.Entities.Signatory", b =>
-                {
-                    b.Navigation("Documents");
                 });
 #pragma warning restore 612, 618
         }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DesafioAVMB.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class AddBaseEntitiesAndAuth : Migration
+    public partial class FirstMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -55,26 +55,14 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProviderId = table.Column<long>(type: "bigint", nullable: false),
                     OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OwnerProviderId = table.Column<long>(type: "bigint", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Repositories", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Signatories",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Order = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Signatories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -189,7 +177,8 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RepositoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Sent = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -210,8 +199,7 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
                     EnvelopeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MimeType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Base64Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SignatoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Base64Content = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -222,11 +210,27 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
                         principalTable: "Envelopes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Signatories",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EnvelopeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Order = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Signatories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Documents_Signatories_SignatoryId",
-                        column: x => x.SignatoryId,
-                        principalTable: "Signatories",
-                        principalColumn: "Id");
+                        name: "FK_Signatories_Envelopes_EnvelopeId",
+                        column: x => x.EnvelopeId,
+                        principalTable: "Envelopes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -274,14 +278,14 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
                 column: "EnvelopeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Documents_SignatoryId",
-                table: "Documents",
-                column: "SignatoryId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Envelopes_RepositoryId",
                 table: "Envelopes",
                 column: "RepositoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Signatories_EnvelopeId",
+                table: "Signatories",
+                column: "EnvelopeId");
         }
 
         /// <inheritdoc />
@@ -306,6 +310,9 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
                 name: "Documents");
 
             migrationBuilder.DropTable(
+                name: "Signatories");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -313,9 +320,6 @@ namespace DesafioAVMB.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "Envelopes");
-
-            migrationBuilder.DropTable(
-                name: "Signatories");
 
             migrationBuilder.DropTable(
                 name: "Repositories");

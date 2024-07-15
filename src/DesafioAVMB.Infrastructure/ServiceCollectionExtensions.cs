@@ -1,12 +1,17 @@
-﻿using DesafioAVMB.Infrastructure.Persistence;
+﻿using System.Text;
 
+using DesafioAVMB.Application.Interfaces.Repositories;
+using DesafioAVMB.Application.WebService;
+using DesafioAVMB.Infrastructure.Persistence;
+using DesafioAVMB.Infrastructure.Persistence.Repositories;
+using DesafioAVMB.Infrastructure.WebServices;
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace DesafioAVMB.Infrastructure;
 
@@ -16,6 +21,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddPersistence(configuration);
         services.AddAuthenticationAndAuthorization();
+        services.AddWebServices();
 
         return services;
     }
@@ -28,9 +34,16 @@ public static class ServiceCollectionExtensions
             throw new Exception("Connection string is missing.");
         }
 
-        services.AddDbContext<ApplicationDbContext>(
-            options => options.UseSqlServer(connectionString)
-        );
+        services.AddDbContext<ApplicationDbContext>(options =>
+        {
+            options.UseLazyLoadingProxies();
+            options.UseSqlServer(connectionString);
+        });
+
+        services.AddScoped<IRepositoryRepository, RepositoryRepository>();
+        services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddScoped<IEnvelopeRepository, EnvelopeRepository>();
+        services.AddScoped<ISignatoryRepository, SignatoryRepository>();
 
         return services;
     }
@@ -73,6 +86,13 @@ public static class ServiceCollectionExtensions
             options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
             options.User.RequireUniqueEmail = false;
         });
+
+        return services;
+    }
+
+    private static IServiceCollection AddWebServices(this IServiceCollection services)
+    {
+        services.AddScoped<IAstenAssinaturaWebService, AstenAssinaturaWebService>();
 
         return services;
     }

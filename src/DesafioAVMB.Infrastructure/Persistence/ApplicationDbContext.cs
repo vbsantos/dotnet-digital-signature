@@ -17,25 +17,30 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<Document>()
-            .HasOne(d => d.Envelope)
-            .WithMany(e => e.Documents)
+        // Configuração de um-para-muitos entre Envelope e Document
+        modelBuilder.Entity<Envelope>()
+            .HasMany(e => e.Documents)
+            .WithOne(d => d.Envelope)
             .HasForeignKey(d => d.EnvelopeId);
 
+        // Configuração de um-para-muitos entre Envelope e Signatory
         modelBuilder.Entity<Envelope>()
-            .HasOne(e => e.Repository)
-            .WithMany(r => r.Envelopes)
-            .HasForeignKey(e => e.RepositoryId);
+            .HasMany(e => e.Signatories)
+            .WithOne(s => s.Envelope)
+            .HasForeignKey(s => s.EnvelopeId);
 
+        // Configuração de um-para-muitos entre Repository e Envelope
         modelBuilder.Entity<Repository>()
             .HasMany(r => r.Envelopes)
             .WithOne(e => e.Repository)
             .HasForeignKey(e => e.RepositoryId);
 
-        modelBuilder.Entity<Signatory>()
-            .HasMany(s => s.Documents)
-            .WithOne();
+        // Configuração de um-para-muitos entre User e Repository
+        // modelBuilder.Entity<User>()
+        //     .HasMany(u => u.Repositories)
+        //     .WithOne(r => r.Owner)
+        //     .HasForeignKey(r => r.OwnerId);
+
+        base.OnModelCreating(modelBuilder);
     }
 }

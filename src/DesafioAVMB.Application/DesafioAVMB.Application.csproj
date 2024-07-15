@@ -8,11 +8,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DesafioAVMB.Domain\DesafioAVMB.Domain.csproj" />
-    <ProjectReference Include="..\DesafioAVMB.Infrastructure\DesafioAVMB.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ErrorOr" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
+    <PackageReference Include="Refit" Version="7.1.2" />
   </ItemGroup>
 
 </Project>

@@ -11,4 +11,18 @@ public class GetEnvelopeUseCaseOutputDto
     public required string StatusDescription { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? UpdatedAt { get; set; }
+    public int SignatoryCount { get; set; }
+    public List<GetEnvelopeUseCaseSignatoryDto> Signatories { get; set; } = null!;
+    public List<GetEnvelopeUseCaseDocumentDto> Documents { get; set; } = null!;
+}
+
+public class GetEnvelopeUseCaseSignatoryDto
+{
+    public required string Name { get; set; }
+    public required string Email { get; set; }
+}
+
+public class GetEnvelopeUseCaseDocumentDto
+{
+    public required string Name { get; set; }
 }

@@ -64,6 +64,20 @@ public class GetEnvelopeUseCase : IGetEnvelopeUseCase
                 StatusDescription = ParseEnvelopeStatus.Parse((EEnvelopeStatus)apiReponse.Response.Status),
                 CreatedAt = apiReponse.Response.DataHoraCriacao,
                 UpdatedAt = apiReponse.Response.DataHoraAlteracao,
+                SignatoryCount = envelope.SignatoryCount,
+                Signatories = envelope.Signatories
+                    .Select(x => new GetEnvelopeUseCaseSignatoryDto
+                    {
+                        Name = x.Name,
+                        Email = x.Email,
+                    })
+                    .ToList(),
+                Documents = envelope.Documents
+                    .Select(x => new GetEnvelopeUseCaseDocumentDto
+                    {
+                        Name = x.Name,
+                    })
+                    .ToList(),
             };
 
             return response;

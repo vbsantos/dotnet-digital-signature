@@ -63,10 +63,24 @@ public class GetEnvelopesByRepositorioUseCase : IGetEnvelopesByRepositorioUseCas
                         Id = repository.Envelopes.Where(y => y.ProviderId == x.Id).FirstOrDefault()!.Id,
                         Description = x.Descricao,
                         PageCount = x.NumeroPaginas,
+                        SignatoryCount = repository.Envelopes.Where(e => e.ProviderId == x.Id).FirstOrDefault()!.SignatoryCount,
                         Status = (EEnvelopeStatus)x.Status,
                         StatusDescription = ParseEnvelopeStatus.Parse((EEnvelopeStatus)x.Status),
                         CreatedAt = x.DataHoraCriacao,
                         UpdatedAt = x.DataHoraAlteracao,
+                        Signatories = repository.Envelopes.Where(y => y.ProviderId == x.Id).FirstOrDefault()!.Signatories
+                            .Select(x => new GetEnvelopeUseCaseSignatoryDto
+                            {
+                                Name = x.Name,
+                                Email = x.Email,
+                            })
+                            .ToList(),
+                        Documents = repository.Envelopes.Where(y => y.ProviderId == x.Id).FirstOrDefault()!.Documents
+                            .Select(x => new GetEnvelopeUseCaseDocumentDto
+                            {
+                                Name = x.Name,
+                            })
+                            .ToList(),
                     })
                 };
                 return response;
